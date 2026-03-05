@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw Skills Hub | Agent Skills 每3小时更新</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --bg: #0f0f1a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(16, 185, 129, 0.1), transparent),
+                var(--bg);
+        }
+
+        .grid-pattern {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            background: rgba(15, 15, 26, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .update-badge {
+            padding: 0.375rem 0.75rem;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .last-update {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .last-update span {
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 0 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .hero-stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--card-bg);
+            padding: 0.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .filter-tab:hover:not(.active) {
+            color: var(--text);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+        }
+
+        .news-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(16,185,129,0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .news-category {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 0.25rem 0.75rem;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .news-content {
+            padding: 1.25rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+
+        .news-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .news-title a:hover {
+            color: var(--primary);
+        }
+
+        .news-summary {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .news-source {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .source-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.875rem;
+            width: 250px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.875rem;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .header-content { padding: 1rem; }
+            .hero h1 { font-size: 2rem; }
+            main { padding: 1rem; }
+            .news-grid { grid-template-columns: 1fr; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .search-box input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="grid-pattern"></div>
+
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🦞</div>
+                <div>
+                    <div class="logo-text">OpenClaw Skills Hub</div>
+                    <div class="logo-sub">Agent Skills Intelligence</div>
+                </div>
+            </div>
+            <div class="header-meta">
+                <span class="update-badge">每3小时更新</span>
+                <div class="last-update">更新: <span id="updateTime">2026-03-04</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>OpenClaw Agent Skills</h1>
+            <p>每3小时自动汇总 OpenClaw Agent Skills 相关资讯，包括新技能发布、工具集成、使用案例和社区动态。</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">3h</div>
+                    <div class="hero-stat-label">更新频率</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">24/7</div>
+                    <div class="hero-stat-label">自动运行</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">Agent</div>
+                    <div class="hero-stat-label">智能抓取</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalNews">5</div>
+                <div class="stat-label">最新资讯</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">技能分类</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">新闻来源</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">持续更新</div>
+            </div>
+        </section>
+
+        <section class="filter-bar">
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">全部</button>
+                <button class="filter-tab" data-filter="skill">技能</button>
+                <button class="filter-tab" data-filter="tool">工具</button>
+                <button class="filter-tab" data-filter="tutorial">教程</button>
+                <button class="filter-tab" data-filter="community">社区</button>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="搜索技能..." id="searchInput">
+            </div>
+        </section>
+
+        <section class="news-grid" id="newsGrid">
+            <article class="news-card" data-category="skill">
+                <div class="news-image">
+                    <span>📊</span>
+                    <span class="news-category">技能</span>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title"><a href="https://github.com/openclaw/openclaw" target="_blank">OpenClaw 官方 Skills 仓库新增 xlsx 技能</a></h3>
+                    <p class="news-summary">官方新增 xlsx 技能，支持读取、编辑、创建 Excel 文件，自动处理表格数据转换和格式化。</p>
+                    <div class="news-meta">
+                        <div class="news-source"><span class="source-icon">G</span><span>GitHub</span></div>
+                        <time>2026-03-04</time>
+                    </div>
+                </div>
+            </article>
+
+            <article class="news-card" data-category="skill">
+                <div class="news-image">
+                    <span>🎨</span>
+                    <span class="news-category">技能</span>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title"><a href="https://github.com/openclaw/openclaw" target="_blank">前端设计技能 frontend-design 正式发布</a></h3>
+                    <p class="news-summary">提供专业的 Web 前端设计指导，支持创建精美网页、组件和视觉设计，避免通用 AI 审美。</p>
+                    <div class="news-meta">
+                        <div class="news-source"><span class="source-icon">G</span><span>GitHub</span></div>
+                        <time>2026-03-04</time>
+                    </div>
+                </div>
+            </article>
+
+            <article class="news-card" data-category="tool">
+                <div class="news-image">
+                    <span>🔧</span>
+                    <span class="news-category">工具</span>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title"><a href="https://clawhub.com" target="_blank">Agent Reach 工具集正式集成</a></h3>
+                    <p class="news-summary">支持 Twitter/X、YouTube、GitHub、Bilibili、小红书等多平台数据抓取，无需 API Key。</p>
+                    <div class="news-meta">
+                        <div class="news-source"><span class="source-icon">C</span><span>ClawHub</span></div>
+                        <time>2026-03-04</time>
+                    </div>
+                </div>
+            </article>
+
+            <article class="news-card" data-category="tutorial">
+                <div class="news-image">
+                    <span>📚</span>
+                    <span class="news-category">教程</span>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title"><a href="https://docs.openclaw.ai" target="_blank">MCP Builder 技能开发指南发布</a></h3>
+                    <p class="news-summary">详细介绍如何为 OpenClaw 创建 MCP (Model Context Protocol) 服务器，集成外部 API。</p>
+                    <div class="news-meta">
+                        <div class="news-source"><span class="source-icon">D</span><span>Docs</span></div>
+                        <time>2026-03-04</time>
+                    </div>
+                </div>
+            </article>
+
+            <article class="news-card" data-category="skill">
+                <div class="news-image">
+                    <span>🤖</span>
+                    <span class="news-category">技能</span>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title"><a href="https://github.com/openclaw/openclaw" target="_blank">gh-issues 技能支持自动修复 GitHub Issues</a></h3>
+                    <p class="news-summary">新增 gh-issues 技能，可自动获取 Issues、生成修复代码、提交 PR 并监控审核状态。</p>
+                    <div class="news-meta">
+                        <div class="news-source"><span class="source-icon">G</span><span>GitHub</span></div>
+                        <time>2026-03-04</time>
+                    </div>
+                </div>
+            </article>
+
+            <article class="news-card" data-category="community">
+                <div class="news-image">
+                    <span>💬</span>
+                    <span class="news-category">社区</span>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title"><a href="https://discord.com/invite/clawd" target="_blank">OpenClaw Discord 社区突破 5000 成员</a></h3>
+                    <p class="news-summary">社区快速增长，技能分享频道活跃，多位开发者贡献了高质量的第三方 Skills。</p>
+                    <div class="news-meta">
+                        <div class="news-source"><span class="source-icon">D</span><span>Discord</span></div>
+                        <time>2026-03-04</time>
+                    </div>
+                </div>
+            </article>
+
+            <article class="news-card" data-category="tool">
+                <div class="news-image">
+                    <span>🌐</span>
+                    <span class="news-category">工具</span>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title"><a href="https://github.com/openclaw/openclaw" target="_blank">浏览器自动化技能升级</a></h3>
+                    <p class="news-summary">browser 技能新增 Playwright 支持，可控制浏览器截图、点击、填写表单、执行 JavaScript。</p>
+                    <div class="news-meta">
+                        <div class="news-source"><span class="source-icon">G</span><span>GitHub</span></div>
+                        <time>2026-03-04</time>
+                    </div>
+                </div>
+            </article>
+
+            <article class="news-card" data-category="tutorial">
+                <div class="news-image">
+                    <span>🎓</span>
+                    <span class="news-category">教程</span>
+                </div>
+                <div class="news-content">
+                    <h3 class="news-title"><a href="https://docs.openclaw.ai" target="_blank">定时任务 Cron 技能使用教程</a></h3>
+                    <p class="news-summary">详解如何使用 cron 技能创建定时任务，支持多种调度策略和自动部署。</p>
+                    <div class="news-meta">
+                        <div class="news-source"><span class="source-icon">D</span><span>Docs</span></div>
+                        <time>2026-03-04</time>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>OpenClaw Agent Skills Hub | Auto-updated every 3 hours via Agent Reach</p>
+        <p style="margin-top: 0.5rem;">Built with 🤖 by AI Agent | Deployed on <a href="https://netlify.com">Netlify</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">Powered by OpenClaw Skills: web_fetch, cron, netlify-deploy</p>
+    </footer>
+
+    <script>
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        function filterNews() {
+            const cards = document.querySelectorAll('.news-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const category = card.dataset.category;
+                const title = card.querySelector('.news-title').textContent.toLowerCase();
+                const summary = card.querySelector('.news-summary').textContent.toLowerCase();
+                
+                const matchFilter = currentFilter === 'all' || category === currentFilter;
+                const matchSearch = !searchQuery || 
+                    title.includes(searchQuery.toLowerCase()) ||
+                    summary.includes(searchQuery.toLowerCase());
+                
+                if (matchFilter && matchSearch) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('totalNews').textContent = visibleCount;
+        }
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                filterNews();
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            filterNews();
+        });
+    </script>
+</body>
+</html>
