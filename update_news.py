@@ -95,8 +95,8 @@ def update_website(news_list):
     
     # 更新时间戳
     content = re.sub(
-        r'document\.getElementById\("updateTime"\)\.textContent = ".*?"',
-        f'document.getElementById("updateTime").textContent = "{today}"',
+        r'<span id="updateTime">.*?</span>',
+        f'<span id="updateTime">{today}</span>',
         content
     )
     
