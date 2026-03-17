@@ -113,55 +113,52 @@ def update_website(news_list):
     return True
 
 def deploy():
-    """部署到 Netlify"""
+    """部署到 GitHub Pages (通过 git push)"""
     try:
-        # 先创建站点
+        # 检查是否有更改
         result = subprocess.run(
-            ["netlify", "api", "createSite", "--data", '{"name":"openclaw-skills-hub"}'],
+            ["git", "status", "--porcelain"],
+            cwd=SITE_DIR,
             capture_output=True,
             text=True,
             timeout=30
         )
         
-        # 提取 site ID
-        site_id = None
-        if result.returncode == 0:
-            match = re.search(r'"id":"([a-f0-9-]+)"', result.stdout)
-            if match:
-                site_id = match.group(1)
-                # 保存 site ID
-                config_file = SITE_DIR / ".site_id"
-                config_file.write_text(site_id)
+        if not result.stdout.strip():
+            print("✅ 没有更改需要提交")
+            return True
         
-        # 读取保存的 site ID
-        config_file = SITE_DIR / ".site_id"
-        if config_file.exists():
-            site_id = config_file.read_text().strip()
+        # 添加更改
+        subprocess.run(["git", "add", "."], cwd=SITE_DIR, check=True, timeout=30)
         
-        if not site_id:
-            print("❌ 无法获取 site ID")
-            return False
+        # 提交
+        now = datetime.now().strftime("%Y-%m-%d-%H:%M")
+        subprocess.run(
+            ["git", "commit", "-m", f"Update {now}"],
+            cwd=SITE_DIR,
+            check=True,
+            timeout=30
+        )
         
-        # 部署
+        # 推送到 GitHub
         result = subprocess.run(
-            ["netlify", "deploy", f"--site={site_id}", "--prod", "--dir=."],
+            ["git", "push", "origin", "main"],
             cwd=SITE_DIR,
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=60
         )
         
         if result.returncode == 0:
-            print("✅ 部署成功")
-            # 提取 URL
-            url_match = re.search(r'https://[a-z0-9-]+\.netlify\.app', result.stdout)
-            if url_match:
-                print(f"🌐 {url_match.group()}")
+            print("✅ 部署成功: https://dingcaozhi.github.io/openclaw-skills-hub/")
             return True
         else:
             print(f"❌ 部署失败: {result.stderr[:200]}")
             return False
             
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Git 命令失败: {e}")
+        return False
     except Exception as e:
         print(f"❌ 异常: {e}")
         return False
